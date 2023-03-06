@@ -2,7 +2,7 @@ import pinecone
 import openai
 
 ## limit the context length
-max_length = 10000
+max_len = 10000
 
 ## top k value
 top_k_value = 25
@@ -41,9 +41,9 @@ def retrieve(query):
     prompt_end = (
         f"\n\nQuestion: {query}\nAnswer:"
     )
-    # append contexts until hitting max_length
+    # append contexts until hitting max_len
     for i in range(1, len(contexts)):
-        if len("\n\n---\n\n".join(contexts[:i])) >= max_length:
+        if len("\n\n---\n\n".join(contexts[:i])) >= max_len:
             prompt = (
                 prompt_start +
                 "\n\n---\n\n".join(contexts[:i-1]) +

@@ -18,7 +18,7 @@ df.head()
 ################################################################################
 
 def create_context(
-    question, df, max_len=1800, size="ada"
+        question, df, max_len=1800, size="ada"
 ):
     """
     Create a context for a question by finding the most similar context from the dataframe
@@ -51,14 +51,14 @@ def create_context(
     return "\n\n###\n\n".join(returns)
 
 def answer_question(
-    df,
-    model="text-davinci-003",
-    question="Am I allowed to publish model outputs to Twitter, without a human review?",
-    max_len=1800,
-    size="ada",
-    debug=False,
-    max_tokens=1200,
-    stop_sequence=None
+        df,
+        model="text-davinci-003",
+        question="What is the lowest octane sold in Wisconsin",
+        max_len=1800,
+        size="ada",
+        debug=False,
+        max_tokens=400,
+        stop_sequence=None
 ):
     """
     Answer a question based on the most similar context from the dataframe texts

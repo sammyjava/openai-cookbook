@@ -158,7 +158,7 @@ df['n_tokens'] = df.text.apply(lambda x: len(tokenizer.encode(x)))
 ### Step 8
 ################################################################################
 
-max_tokens = 500
+max_tokens = 400
 
 ## Function to split the text into chunks of a maximum number of tokens
 def split_into_many(text, max_tokens = max_tokens):
