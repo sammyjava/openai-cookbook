@@ -44,7 +44,7 @@ conn = None
 try:
     # connect to the PostgreSQL server
     print('Connecting to the PostgreSQL database...')
-    conn = psycopg2.connect("dbname=pure-gas-extensions user=sam")
+    conn = psycopg2.connect("dbname=puregas user=shokin")
     
     # create a cursor
     cur = conn.cursor()
@@ -68,7 +68,7 @@ try:
     # removed       | timestamp(0) without time zone |           |          | 
     # phone         | character varying              |           |          | 
     #               0          1           2             3    4         5     6      7       8          
-    query = "SELECT station_id,stationname,streetaddress,city,stateprov,phone,author,comment,timeposted FROM stations WHERE removed IS NULL ORDER BY timeposted DESC LIMIT " + str(num_stations)
+    query = "SELECT station_id,stationname,streetaddress,city,stateprov,phone,author,comment,timeposted FROM stations WHERE removed IS NULL ORDER BY station_id LIMIT " + str(num_stations)
     print(query)
     cur.execute(query)
     for record in cur:
@@ -112,7 +112,7 @@ try:
         if not first:
             blurb += " octane. "
 
-        ## Now query the station updates for the stations we've loaded above.
+        ## Now query the most recent station update for the stations we've loaded above.
         # stationupdate_id | integer
         # station_id       | integer
         # timeupdated      | timestamp(0) without time zone
@@ -120,9 +120,10 @@ try:
         # comment          | character varying
         # removal          | boolean
         #               0           1      2
-        query = "SELECT timeupdated,author,comment FROM stationupdates WHERE station_id=" + str(station_id) + " ORDER BY stationupdate_id"
+        query = "SELECT timeupdated,author,comment FROM stationupdates WHERE station_id=" + str(station_id) + " ORDER BY stationupdate_id DESC"
         cur.execute(query)
-        for update_record in cur:
+        if cur.rowcount:
+            update_record = cur.fetchone()
             timeupdated = update_record[0].strftime('%B %-d, %Y')
             author = update_record[1]
             comment = update_record[2]

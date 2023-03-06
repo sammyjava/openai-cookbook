@@ -1,8 +1,8 @@
 import pinecone
 import openai
 
-## limit the number of contexts we retrieve
-limit = 1000
+## limit the context length
+max_length = 10000
 
 ## our OpenAI embedding model
 embed_model = "text-embedding-ada-002"
@@ -25,7 +25,7 @@ def retrieve(query):
     xq = res['data'][0]['embedding']
 
     # get relevant contexts
-    res = index.query(xq, top_k=3, include_metadata=True)
+    res = index.query(xq, top_k=25, include_metadata=True)
     contexts = [
         x['metadata']['text'] for x in res['matches']
     ]
@@ -33,14 +33,14 @@ def retrieve(query):
     # build our prompt with the retrieved contexts included
     prompt_start = (
         "Answer the question based on the context below.\n\n"+
-        "Context:\n"
+        "Context:\n\n"
     )
     prompt_end = (
         f"\n\nQuestion: {query}\nAnswer:"
     )
-    # append contexts until hitting limit
+    # append contexts until hitting max_length
     for i in range(1, len(contexts)):
-        if len("\n\n---\n\n".join(contexts[:i])) >= limit:
+        if len("\n\n---\n\n".join(contexts[:i])) >= max_length:
             prompt = (
                 prompt_start +
                 "\n\n---\n\n".join(contexts[:i-1]) +
