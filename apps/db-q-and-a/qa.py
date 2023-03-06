@@ -57,7 +57,7 @@ def answer_question(
     max_len=1800,
     size="ada",
     debug=False,
-    max_tokens=150,
+    max_tokens=1200,
     stop_sequence=None
 ):
     """
@@ -98,7 +98,7 @@ def answer_question(
 operating = True
 while operating:
     print("")
-    question = input("Ask a question: ")
+    question = input("Question: ")
     if len(question) > 0:
         print(answer_question(df, question=question, debug=False))
     else:
