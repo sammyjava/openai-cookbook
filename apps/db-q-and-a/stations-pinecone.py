@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import psycopg2
-from config import config
 import tiktoken
 import openai
 import pinecone
@@ -8,7 +7,7 @@ from tqdm.auto import tqdm
 from time import sleep
 
 ## Limit the number of stations loaded
-num_stations = 1000
+num_stations = 20000
 
 ## our OpenAI embedding model
 embed_model = "text-embedding-ada-002"
@@ -43,12 +42,9 @@ data = []
 ## load the data
 conn = None
 try:
-    # read connection parameters
-    params = config()
-
     # connect to the PostgreSQL server
     print('Connecting to the PostgreSQL database...')
-    conn = psycopg2.connect(**params)
+    conn = psycopg2.connect("dbname=pure-gas-extensions user=sam")
     
     # create a cursor
     cur = conn.cursor()
