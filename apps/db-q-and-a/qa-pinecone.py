@@ -4,6 +4,9 @@ import openai
 ## limit the context length
 max_length = 10000
 
+## top k value
+top_k_value = 25
+
 ## our OpenAI embedding model
 embed_model = "text-embedding-ada-002"
 
@@ -25,7 +28,7 @@ def retrieve(query):
     xq = res['data'][0]['embedding']
 
     # get relevant contexts
-    res = index.query(xq, top_k=25, include_metadata=True)
+    res = index.query(xq, top_k=top_k_value, include_metadata=True)
     contexts = [
         x['metadata']['text'] for x in res['matches']
     ]
