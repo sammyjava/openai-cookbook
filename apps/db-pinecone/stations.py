@@ -2,6 +2,7 @@
 import psycopg2
 import tiktoken
 import openai
+import os
 import pinecone
 from tqdm.auto import tqdm
 from time import sleep
@@ -22,20 +23,6 @@ def clean_up_text(txt):
     txt = txt.strip()
     return txt
 
-def complete(prompt):
-    # query text-davinci-003
-    res = openai.Completion.create(
-        engine='text-davinci-003',
-        prompt=prompt,
-        temperature=0,
-        max_tokens=400,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0,
-        stop=None
-    )
-    return res['choices'][0]['text'].strip()
-
 ## list of data
 data = []
 
@@ -44,7 +31,7 @@ conn = None
 try:
     # connect to the PostgreSQL server
     print('Connecting to the PostgreSQL database...')
-    conn = psycopg2.connect("dbname=puregas user=shokin")
+    conn = psycopg2.connect("dbname=puregas user=sam")
     
     # create a cursor
     cur = conn.cursor()
@@ -149,8 +136,10 @@ finally:
 
 ## initialize connection to pinecone (get API key at app.pinecone.io)
 index_name = 'pure-gas'
-pinecone.init(api_key="19470b6c-f7d0-4df2-a30c-c394f9dc4ffd",
-              environment="us-west1-gcp")
+pinecone.init(
+    api_key = os.getenv('PINECONE_API_KEY'),
+    environment = os.getenv('PINECONE_ENVIRONMENT')
+)
 
 ## create index if doesn't exist
 if index_name not in pinecone.list_indexes():
