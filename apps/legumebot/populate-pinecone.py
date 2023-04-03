@@ -1,5 +1,4 @@
 #!/usr/bin/python
-import psycopg2
 import tiktoken
 import openai
 import os
@@ -17,7 +16,7 @@ embed_model = "text-embedding-ada-002"
 pinecone_index_name = 'legumebot'
 
 ## limit the number of lines processed
-max_lines = 1000
+max_lines = 5000000
 
 ## how many embeddings we create and insert at once
 batch_size = 100
@@ -46,14 +45,15 @@ while True:
     if not line:
         break
     parts = line.split("|")
-    ident = parts[0]
-    description = clean_up_text(parts[1])
-    if (description != "Unknown protein") and (description != "hypothetical protein"):
-        data.append({
-            'id': ident,
-            'text': ident + ":" + description,
-            'identifier': ident
-        })
+    if len(parts) == 2:
+        ident = parts[0]
+        description = clean_up_text(parts[1])
+        if (description != "Unknown protein") and (description != "hypothetical protein"):
+            data.append({
+                'id': ident,
+                'text': ident + ":" + description,
+                'identifier': ident
+            })
 file.close()
 
 ## initialize connection to pinecone (get API key at app.pinecone.io)

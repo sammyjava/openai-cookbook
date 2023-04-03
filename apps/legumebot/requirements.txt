@@ -1,5 +1,4 @@
 openai==0.27.2
 pinecone_client==2.2.1
-psycopg2==2.9.5
 tiktoken==0.1.2
 tqdm==4.64.1
