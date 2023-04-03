@@ -3,7 +3,7 @@ import openai
 import os
 
 ## limit the context length
-max_len = 10000
+max_len = 100000
 
 ## OpenAI stuff
 openai_embed_model = "text-embedding-ada-002"
@@ -11,7 +11,7 @@ openai_max_tokens = 400
 openai_completion_model = "gpt-3.5-turbo"
 
 ## Pinecone stuff
-pinecone_index_name = "pure-gas"
+pinecone_index_name = "legumebot"
 pinecone_top_k_value = 25
 
 ## connect to our Pinecone index
@@ -76,27 +76,6 @@ def complete(prompt):
         presence_penalty=0,
         stop=None
     )
-    # {
-    #   "choices": [
-    #     {
-    #       "finish_reason": "stop",
-    #       "index": 0,
-    #       "message": {
-    #         "content": "The following stations in Wisconsin have 93 octane....",
-    #         "role": "assistant"
-    #       }
-    #     }
-    #   ],
-    #   "created": 1680182767,
-    #   "id": "chatcmpl-6zmZzeEPf0b7aZs36yoYH0pAncDVh",
-    #   "model": "gpt-3.5-turbo-0301",
-    #   "object": "chat.completion",
-    #   "usage": {
-    #     "completion_tokens": 155,
-    #     "prompt_tokens": 2085,
-    #     "total_tokens": 2240
-    #   }
-    # }
     return res['choices'][0]['message']['content'].strip()
 
 ## Answer questions until blank return
