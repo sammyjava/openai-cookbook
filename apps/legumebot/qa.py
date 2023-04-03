@@ -2,17 +2,14 @@ import pinecone
 import openai
 import os
 
-## limit the context length
-max_len = 100000
-
-## OpenAI stuff
 openai_embed_model = "text-embedding-ada-002"
-openai_max_tokens = 400
 openai_completion_model = "gpt-3.5-turbo"
-
-## Pinecone stuff
 pinecone_index_name = "legumebot"
-pinecone_top_k_value = 25
+
+pinecone_top_k_value = 100
+
+openai_max_len = 6000
+openai_max_tokens = 1800
 
 ## connect to our Pinecone index
 pinecone.init(
@@ -44,9 +41,9 @@ def retrieve(query):
     prompt_end = (
         f"\n\nQuestion: {query}\nAnswer:"
     )
-    ## append contexts until hitting max_len
+    ## append contexts until hitting openai_max_len
     for i in range(1, len(contexts)):
-        if len("\n\n---\n\n".join(contexts[:i])) >= max_len:
+        if len("\n\n---\n\n".join(contexts[:i])) >= openai_max_len:
             prompt = (
                 prompt_start +
                 "\n\n---\n\n".join(contexts[:i-1]) +
