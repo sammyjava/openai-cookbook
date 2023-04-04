@@ -16,8 +16,11 @@ embed_model = "text-embedding-ada-002"
 pinecone_index_name = 'legumebot'
 
 ## limit the number of lines processed
-max_lines = 4000000
-# max_lines = 100
+#max_stored_lines = 4000000
+max_stored_lines = 100
+
+## start past first line
+start_line = 10000
 
 ## how many embeddings we create and insert at once
 batch_size = 100
@@ -39,26 +42,28 @@ file = open(datafile_name, 'r')
 count = 0
 stored = 0
 while True:
-    count += 1
-    if count > max_lines:
+    if stored >= max_stored_lines:
         break
     line = file.readline()
     if not line:
         break
-    parts = line.split("|")
-    if len(parts) >= 4:
-        stored += 1
-        ident = parts[0]
-        genus = parts[1]
-        species = parts[2]
-        description = clean_up_text(parts[3])
-        data.append({
-            'id': ident,
-            'text': "identifier:" + ident + ", genus:" + genus + ", species:" + species + ", description:'" + description + "'",
-            'identifier': ident,
-            'genus': genus,
-            'species': species
-    })
+    count += 1
+    if count > start_line:
+        parts = line.split("|")
+        if len(parts) >= 4:
+            stored += 1
+            ident = parts[0]
+            genus = parts[1]
+            species = parts[2]
+            description = clean_up_text(parts[3])
+            json = {
+                'id': ident,
+                'text': "identifier:" + ident + ", genus:" + genus + ", species:" + species + ", description:'" + description + "'",
+                'identifier': ident,
+                'genus': genus,
+                'species': species
+            }
+            data.append(json)
 file.close()
 
 print("Read " + str(count) + " lines and stored " + str(stored) + ".")
