@@ -16,7 +16,8 @@ embed_model = "text-embedding-ada-002"
 pinecone_index_name = 'legumebot'
 
 ## limit the number of lines processed
-max_lines = 5000000
+# max_lines = 5000000
+max_lines = 100
 
 ## how many embeddings we create and insert at once
 batch_size = 100
@@ -45,15 +46,19 @@ while True:
     if not line:
         break
     parts = line.split("|")
-    if len(parts) == 2:
-        ident = parts[0]
-        description = clean_up_text(parts[1])
-        if (description != "Unknown protein") and (description != "hypothetical protein"):
-            data.append({
-                'id': ident,
-                'text': ident + ":" + description,
-                'identifier': ident
-            })
+    if len(parts) != 4:
+        break
+    ident = parts[0]
+    genus = parts[1]
+    species = parts[2]
+    description = clean_up_text(parts[3])
+    data.append({
+        'id': ident,
+        'text': "identifier:" + ident + ", genus:" + genus + ", species:" + species + ", description:'" + description + "'",
+        'identifier': ident,
+        'genus': genus,
+        'species': species
+    })
 file.close()
 
 ## initialize connection to pinecone (get API key at app.pinecone.io)
@@ -64,11 +69,14 @@ pinecone.init(
 
 ## create index if doesn't exist
 if pinecone_index_name not in pinecone.list_indexes():
+    print("Creating index " + pinecone_index_name + "...")
     pinecone.create_index(
         pinecone_index_name,
         dimension=1536,
         metric='cosine',
-        metadata_config={'indexed': ['state']}
+        metadata_config={
+            'indexed': ['identifier', 'genus', 'species' ]
+        }
     )
 
 ## connect to index
